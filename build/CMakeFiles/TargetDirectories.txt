@@ -1,3 +1,0 @@
-/home/romain/Documents/XJTLU/Y4S2-EIB/BUS303/Stock Data/build/CMakeFiles/matplot_lib.dir
-/home/romain/Documents/XJTLU/Y4S2-EIB/BUS303/Stock Data/build/CMakeFiles/edit_cache.dir
-/home/romain/Documents/XJTLU/Y4S2-EIB/BUS303/Stock Data/build/CMakeFiles/rebuild_cache.dir

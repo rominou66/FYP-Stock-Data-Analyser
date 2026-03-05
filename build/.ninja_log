@@ -1,6 +1,0 @@
-# ninja log v5
-4	2626	1772707669478501712	CMakeFiles/matplot_lib.dir/src/parser.cpp.o	12917de5219d01e0
-3	4085	1772707670937510225	CMakeFiles/matplot_lib.dir/src/plotter.cpp.o	3b74cf9a71f09e43
-7	632	1772707767787082505	CMakeFiles/matplot_lib.dir/src/stock.cpp.o	5126f3f046ab6630
-5	3096	1772707770251097238	CMakeFiles/matplot_lib.dir/src/main.cpp.o	544dc43e5f9cca8c
-3096	3196	1772707770351359135	matplot_lib	f197e6cf8ffc5852

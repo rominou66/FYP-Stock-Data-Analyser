@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.10)
+project(StockDataPlot)
+
+# Set matplot++ paths
+set(MATPLOT_INCLUDE_DIR "/home/linuxbrew/.linuxbrew/Cellar/matplotplusplus/1.2.2/include")
+set(MATPLOT_LIBRARY_DIR "/home/linuxbrew/.linuxbrew/Cellar/matplotplusplus/1.2.2/lib")
+
+# Add executable
+add_executable(matplot_lib src/matplot_lib.cpp)
+
+# Include directories and link libraries
+target_include_directories(matplot_lib PRIVATE ${MATPLOT_INCLUDE_DIR})
+target_link_directories(matplot_lib PRIVATE ${MATPLOT_LIBRARY_DIR})
+target_link_libraries(matplot_lib PRIVATE matplot)
+
+# Set rpath to find the library at runtime
+set_target_properties(matplot_lib PROPERTIES
+    INSTALL_RPATH "${MATPLOT_LIBRARY_DIR}"
+    BUILD_RPATH "${MATPLOT_LIBRARY_DIR}")

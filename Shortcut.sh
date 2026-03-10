@@ -12,7 +12,7 @@ while true; do
     fi
 
     clear
-    cd ~/Documents/XJTLU/Y4S2-EIB/BUS303/Stock\ Data
+    cd ~/Documents/XJTLU/Y4S2-EIB/BUS303/FYP-Stock-Data
     case $CHOICE in
         "Format")
             astyle -A14 --recursive "src/*" &

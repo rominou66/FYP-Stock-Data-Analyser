@@ -3,8 +3,14 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+#include <algorithm>
 #include <matplot/matplot.h>
 
-void plot(std::vector<std::string> dates, std::vector<double> prices);
+#include "stock.hpp"
+
+void singlePlot(Stock stock);
+void multiPlot(const std::vector<Stock>& stocks);
+void normalizedMultiPlot(const std::vector<Stock>& stocks);
 
 #endif //PLOTTER_HPP

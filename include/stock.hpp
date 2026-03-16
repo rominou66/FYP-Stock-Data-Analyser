@@ -22,6 +22,10 @@ struct Stock {
     std::string tickerN;
     std::string disclosureD;
     std::vector<Hist_Data> histD;
+    double alpha;
+    double beta;
 };
+
+int findStockByName(const std::vector<Stock>& stocks, const std::string& name);
 
 #endif //STOCK_HPP

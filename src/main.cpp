@@ -3,6 +3,7 @@
 #include "../include/plotter.hpp"
 #include "../include/parser.hpp"
 #include "../include/stock.hpp"
+#include "../include/analysis.hpp"
 
 int main() {
     // 1. Parse all CSV files and get the stock data
@@ -20,6 +21,14 @@ int main() {
     normalizedMultiPlot(stocks);
 
     // 5. Analysed
+    int spy = stocks[findStockByName(stocks, "SPY")];
+    for(auto& stock : stocks) {
+        estimateAlphaBeta(stock, stocks[spy]);
+    }
+    // Abnormal Return
+    for(const auto& stock : stocks) {
+        abnormalReturnPlot(stock, stocks[spy]);
+    }
 
     return 0;
 }

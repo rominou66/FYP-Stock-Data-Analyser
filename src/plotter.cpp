@@ -23,11 +23,8 @@ void singlePlot(Stock stock) {
         x_values[i] = static_cast<double>(i);
     }
 
-    // Find min and max prices for vertical line
-    // double min_price = *std::min_element(prices.begin(), prices.end());
-    // double max_price = *std::max_element(prices.begin(), prices.end());
-
     // Create the plot
+    auto fig = matplot::figure(true);
     matplot::plot(x_values, prices, "-o");
 
     // Add disclosure date marker if available
@@ -105,7 +102,7 @@ void multiPlot(const std::vector<Stock>& stocks) {
     }
 
     // Create the plot
-    matplot::figure();
+    auto fig = matplot::figure(true);
     matplot::hold(matplot::on);
 
     // Plot each stock's data
@@ -169,6 +166,7 @@ void multiPlot(const std::vector<Stock>& stocks) {
 
     // Save the plot
     matplot::save("../output/multi-stock-plot", "svg");
+    matplot::hold(matplot::off);
 }
 
 /**
@@ -196,7 +194,7 @@ void normalizedMultiPlot(const std::vector<Stock>& stocks) {
     }
 
     // Create the plot
-    matplot::figure();
+    auto fig = matplot::figure(true);
     matplot::hold(matplot::on);
 
     // Plot each stock's data, normalized
@@ -268,5 +266,96 @@ void normalizedMultiPlot(const std::vector<Stock>& stocks) {
 
     // Save the plot
     matplot::save("../output/normalized-multi-stock-plot", "svg");
+    matplot::hold(matplot::off);
 }
 
+/**
+ * @brief Single plot for Abnormal Return
+ * 
+ * @param stock 
+ * @param marketReturns 
+ */
+void abnormalReturnPlot(Stock stock, Stock marketReturns) {
+    if (stock.histD.empty() || stock.histD[0].dates.empty() || stock.histD[0].prices.empty()) {
+        std::cerr << "No data available to plot for stock: " << stock.tickerN << std::endl;
+        return;
+    }
+
+    const auto& dates = stock.histD[0].dates;
+    const auto& prices = stock.histD[0].prices;
+    const auto& marketPrices = marketReturns.histD[0].prices;
+
+    // Calculate actual returns (R_it)
+    std::vector<double> actualReturns = calculateReturns(prices);
+
+    // Calculate market returns (R_mt)
+    std::vector<double> marketReturnsVec = calculateReturns(marketPrices);
+
+    // Calculate expected returns (alpha_i + beta_i * R_mt)
+    std::vector<double> expectedReturns(prices.size(), 0.0);
+    for (size_t i = 1; i < marketReturnsVec.size(); ++i) {
+        expectedReturns[i] = stock.alpha + stock.beta * marketReturnsVec[i];
+    }
+
+    // Calculate abnormal returns (AR_it)
+    std::vector<double> abnormalReturns(prices.size(), 0.0);
+    for (size_t i = 1; i < prices.size(); ++i) {
+        abnormalReturns[i] = actualReturns[i] - expectedReturns[i];
+    }
+
+    // Convert dates to numerical values for plotting
+    std::vector<double> x_values(dates.size());
+    for (size_t i = 0; i < dates.size(); ++i) {
+        x_values[i] = static_cast<double>(i);
+    }
+
+    // Plot abnormal returns
+    auto fig = matplot::figure(true);
+    matplot::plot(x_values, abnormalReturns, "-o");
+
+    // Add disclosure date marker if available
+    if (!stock.disclosureD.empty() && stock.disclosureD != "Unknown") {
+        std::string target_date = stock.disclosureD;
+        if (target_date.length() == 8) {
+            target_date = target_date.substr(0, 2) + "/" + target_date.substr(2, 2) + "/" + target_date.substr(4, 4);
+        }
+
+        size_t disclosure_index = dates.size();
+        for (size_t i = 0; i < dates.size(); ++i) {
+            if (dates[i] == target_date) {
+                disclosure_index = i;
+                break;
+            }
+        }
+
+        if (disclosure_index < dates.size()) {
+            double x_disclosure = static_cast<double>(disclosure_index);
+            double y_disclosure = abnormalReturns[disclosure_index];
+            auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
+            t->color("red").font_size(14);
+            a->color("red");
+        }
+    }
+
+    // Set plot title and labels
+    std::string title = "Abnormal Returns: " + stock.tickerN;
+    if (!stock.attackN.empty() && stock.attackN != "Unknown") {
+        title += " (" + stock.attackN + ")";
+    }
+    if (!stock.disclosureD.empty() && stock.disclosureD != "Unknown") {
+        title += " - Disclosed: " + stock.disclosureD;
+    }
+    matplot::title(title);
+    matplot::xlabel("Time Period");
+    matplot::ylabel("Abnormal Return");
+    matplot::grid(true);
+
+    // Add date labels to the x-axis
+    if (!dates.empty()) {
+        matplot::xticks({0, static_cast<double>(dates.size() - 1)});
+        matplot::xticklabels({dates[0], dates.back()});
+    }
+
+    // Save the plot
+    matplot::save("../output/AbnormalReturn-" + stock.attackN + "-" + stock.tickerN, "svg");
+}

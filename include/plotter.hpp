@@ -10,9 +10,10 @@
 #include "stock.hpp"
 #include "analysis.hpp"
 
-void singlePlot(Stock stock);
-void multiPlot(const std::vector<Stock>& stocks);
-void normalizedMultiPlot(const std::vector<Stock>& stocks);
-void abnormalReturnPlot(Stock stock, Stock marketreturns);
+void singlePlot(Stock stock, int before, int after);
+void multiPlot(const std::vector<Stock>& stocks, int before, int after);
+void normalizedMultiPlot(const std::vector<Stock>& stocks, int before, int after);
+void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after);
+void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after);
 
 #endif //PLOTTER_HPP

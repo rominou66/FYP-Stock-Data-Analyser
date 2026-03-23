@@ -2,9 +2,9 @@
 
 /**
  * @brief Calculate returns from prices
- * 
- * @param prices 
- * @return std::vector<double> 
+ *
+ * @param prices
+ * @return std::vector<double>
  */
 std::vector<double> calculateReturns(const std::vector<double>& prices) {
     std::vector<double> returns(prices.size(), 0.0);
@@ -15,10 +15,23 @@ std::vector<double> calculateReturns(const std::vector<double>& prices) {
 }
 
 /**
+* @brief Calculate Cumulative abnormal returns
+*
+* @param abnormalReturns
+*/
+std::vector<double> calculateCAR(const std::vector<double>& abnormalReturns) {
+    std::vector<double> car(abnormalReturns.size(), 0.0);
+    for (size_t i = 1; i < abnormalReturns.size(); ++i) {
+        car[i] = car[i - 1] + abnormalReturns[i];
+    }
+    return car;
+}
+
+/**
  * @brief Estimate alpha and beta using returns
- * 
- * @param stockReturns 
- * @param marketReturns 
+ *
+ * @param stockReturns
+ * @param marketReturns
  */
 void estimateAlphaBeta(Stock& stockReturns, Stock& marketReturns) {
     // Extract prices from the first HistoricalData entry

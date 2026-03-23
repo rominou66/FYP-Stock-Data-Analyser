@@ -9,6 +9,7 @@
 #include "stock.hpp"
 
 std::vector<double> calculateReturns(const std::vector<double>& prices);
+std::vector<double> calculateCAR(const std::vector<double>& abnormalReturns);
 void estimateAlphaBeta(Stock& stockReturns, Stock& marketReturns);
 
 #endif //ANALYSIS_HPP

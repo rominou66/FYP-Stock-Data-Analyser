@@ -11,23 +11,28 @@ int main() {
 
     // 2. Plot each stock's data
     for(const auto& stock : stocks) {
-        singlePlot(stock);
+        //singlePlot(stock, 0, 5);
     }
 
     // 3. Plot all stocks to single graph
-    multiPlot(stocks);
+    //multiPlot(stocks, 0, 5);
 
     // 4. Plot all stocks to single graph normalized
-    normalizedMultiPlot(stocks);
+    normalizedMultiPlot(stocks, 0, 5);
 
     // 5. Analysed
-    int spy = stocks[findStockByName(stocks, "SPY")];
+    int spy = findStockByName(stocks, "SPY");
     for(auto& stock : stocks) {
-        estimateAlphaBeta(stock, stocks[spy]);
+        //estimateAlphaBeta(stock, stocks[spy]);
     }
-    // Abnormal Return
+    // 5.1 Abnormal Return
     for(const auto& stock : stocks) {
-        abnormalReturnPlot(stock, stocks[spy]);
+        //abnormalReturnPlot(stock, stocks[spy], 0, 5);
+    }
+    // 5.2 Cumulative Abnormal Return
+    for(const auto& stock : stocks) {
+        //cumulativeARPlot(stock, stocks[spy], 30, 30);
+        //cumulativeARPlot(stock, stocks[spy], 0, 5);
     }
 
     return 0;

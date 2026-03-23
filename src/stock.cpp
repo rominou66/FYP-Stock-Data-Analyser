@@ -2,10 +2,10 @@
 
 /**
  * @brief Get the vector index for a given ticker name
- * 
- * @param stocks 
- * @param name 
- * @return int 
+ *
+ * @param stocks
+ * @param name
+ * @return int
  */
 int findStockByName(const std::vector<Stock>& stocks, const std::string& name) {
     for (size_t i = 0; i < stocks.size(); ++i) {

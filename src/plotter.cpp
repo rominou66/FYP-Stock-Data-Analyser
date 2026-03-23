@@ -87,8 +87,9 @@ void singlePlot(Stock stock, int before, int after) {
     // Save the plot with 'before' and 'after' in the filename
     std::string filename = "../output/" + stock.attackN + "-" + stock.tickerN +
                            "-before" + std::to_string(before) +
-                           "-after" + std::to_string(after) + ".svg";
-    matplot::save(filename);
+                           "-after" + std::to_string(after);
+    matplot::save(filename + ".svg");
+    savePlottedDataToCSV(filename + ".csv", dates_sliced, prices_sliced, stock.tickerN, before, after);
 }
 
 /**
@@ -115,6 +116,17 @@ void multiPlot(const std::vector<Stock>& stocks, int before, int after) {
     if (!has_valid_data) {
         std::cerr << "No valid data available to plot for any stock." << std::endl;
         return;
+    }
+
+    std::vector<std::string> stock_names;
+    std::vector<std::vector<std::string>> dates_list;
+    std::vector<std::vector<double>> y_values_list;
+
+// Populate stock_names, dates_list, and y_values_list for each stock
+    for (const auto& stock : stocks) {
+        stock_names.push_back(stock.tickerN);
+        dates_list.push_back(stock.histD[0].dates);      // Your dates for this stock
+        y_values_list.push_back(stock.histD[0].prices); // Your y values for this stock
     }
 
     // Create the plot
@@ -212,8 +224,9 @@ void multiPlot(const std::vector<Stock>& stocks, int before, int after) {
     }
 
     // Save the plot
-    std::string filename = "../output/multi-stock-plot-before" + std::to_string(before) + "-after" + std::to_string(after) + ".svg";
-    matplot::save(filename);
+    std::string filename = "../output/multi-stock-plot-before" + std::to_string(before) + "-after" + std::to_string(after);
+    matplot::save(filename + ".svg");
+    savePlottedDataToCSV(filename + ".csv", stock_names, dates_list, y_values_list, before, after);
     matplot::hold(matplot::off);
 }
 
@@ -228,6 +241,17 @@ void normalizedMultiPlot(const std::vector<Stock>& stocks, int before, int after
     if (stocks.empty()) {
         std::cerr << "No stocks provided to plot." << std::endl;
         return;
+    }
+
+    std::vector<std::string> stock_names;
+    std::vector<std::vector<std::string>> dates_list;
+    std::vector<std::vector<double>> y_values_list;
+
+// Populate stock_names, dates_list, and y_values_list for each stock
+    for (const auto& stock : stocks) {
+        stock_names.push_back(stock.tickerN);
+        dates_list.push_back(stock.histD[0].dates);      // Your dates for this stock
+        y_values_list.push_back(stock.histD[0].prices); // Your y values for this stock
     }
 
     // Create the plot
@@ -367,7 +391,8 @@ void normalizedMultiPlot(const std::vector<Stock>& stocks, int before, int after
 
     // Save the plot
     std::string filename = "../output/normalized-multi-stock-plot-before" + std::to_string(before) + "-after" + std::to_string(after) + ".svg";
-    matplot::save(filename);
+    matplot::save(filename + ".svg");
+    savePlottedDataToCSV(filename + ".csv", stock_names, dates_list, y_values_list, before, after);
     matplot::hold(matplot::off);
 }
 
@@ -440,12 +465,14 @@ void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after)
     matplot::plot(x_values, abnormalReturns_sliced, "-o");
 
     // Add disclosure date marker
-    if (disclosure_index < dates.size()) {
-        double x_disclosure = static_cast<double>(disclosure_index - start_index);
-        double y_disclosure = abnormalReturns_sliced[disclosure_index - start_index];
-        auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
-        t->color("red").font_size(14);
-        a->color("red");
+    if( before > 0) {
+        if (disclosure_index < dates.size()) {
+            double x_disclosure = static_cast<double>(disclosure_index - start_index);
+            double y_disclosure = abnormalReturns_sliced[disclosure_index - start_index];
+            auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
+            t->color("red").font_size(14);
+            a->color("red");
+        }
     }
 
     // Set plot title and labels
@@ -478,8 +505,9 @@ void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after)
     // Save the plot with 'before' and 'after' in the filename
     std::string filename = "../output/AbnormalReturn-" + stock.attackN + "-" + stock.tickerN +
                            "-before" + std::to_string(before) +
-                           "-after" + std::to_string(after) + ".svg";
-    matplot::save(filename);
+                           "-after" + std::to_string(after);
+    matplot::save(filename + ".svg");
+    savePlottedDataToCSV(filename + ".csv", dates_sliced, abnormalReturns_sliced, stock.tickerN, before, after);
 }
 
 
@@ -556,12 +584,14 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
     matplot::plot(x_values, car_sliced, "-o");
 
 // Add disclosure date marker
-    if (disclosure_index < dates.size()) {
-        double x_disclosure = static_cast<double>(disclosure_index - start_index);
-        double y_disclosure = car_sliced[disclosure_index - start_index];
-        auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
-        t->color("red").font_size(14);
-        a->color("red");
+    if(before > 0) {
+            if (disclosure_index < dates.size()) {
+                double x_disclosure = static_cast<double>(disclosure_index - start_index);
+                double y_disclosure = car_sliced[disclosure_index - start_index];
+                auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
+                t->color("red").font_size(14);
+                a->color("red");
+            }
     }
 
 // Set plot title and labels
@@ -594,7 +624,8 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
 // Save the plot with before and after in the filename
     std::string filename = "../output/CAR-" + stock.attackN + "-" + stock.tickerN +
                            "-before" + std::to_string(before) +
-                           "-after" + std::to_string(after) + ".svg";
-    matplot::save(filename);
+                           "-after" + std::to_string(after);
+    matplot::save(filename + ".svg");
+    savePlottedDataToCSV(filename + ".csv", dates_sliced, car_sliced, stock.tickerN, before, after);
 }
 

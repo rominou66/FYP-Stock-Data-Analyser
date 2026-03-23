@@ -9,6 +9,7 @@
 
 #include "stock.hpp"
 #include "analysis.hpp"
+#include "parser.hpp"
 
 void singlePlot(Stock stock, int before, int after);
 void multiPlot(const std::vector<Stock>& stocks, int before, int after);

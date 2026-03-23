@@ -105,3 +105,110 @@ std::vector<Stock> processAllCSVFiles() {
     }
     return stocks;
 }
+
+/**
+* @brief Save plotted dates and y values to a CSV file for a single stock
+*
+* @param filename Name of the CSV file to save
+* @param dates Vector of date strings (e.g., "dd/mm/yyyy")
+* @param y_values Vector of y values (e.g., prices or normalized prices)
+* @param stock_name Name of the stock (for CSV header)
+* @param before Number of days before disclosure date (for CSV header)
+* @param after Number of days after disclosure date (for CSV header)
+*/
+void savePlottedDataToCSV(
+    const std::string& filename,
+    const std::vector<std::string>& dates,
+    const std::vector<double>& y_values,
+    const std::string& stock_name,
+    int before,
+    int after
+) {
+// Open the CSV file for writing
+    std::ofstream csv_file(filename);
+    if (!csv_file.is_open()) {
+        std::cerr << "Failed to open CSV file: " << filename << std::endl;
+        return;
+    }
+
+// Write CSV header
+    csv_file << "Stock,Before,After,Date,Value\n";
+    csv_file << stock_name << "," << before << "," << after << ",,\n"; // Metadata row
+
+// Write dates and y values
+    for (size_t i = 0; i < dates.size(); ++i) {
+        if (i < y_values.size()) {
+            csv_file << "," << "," << "," << dates[i] << "," << y_values[i] << "\n";
+        }
+    }
+
+    csv_file.close();
+    std::cout << "Plotted data saved to: " << filename << std::endl;
+}
+
+
+/**
+* @brief Save plotted dates and y values for multiple stocks to a single CSV file
+*
+* @param filename Name of the CSV file to save
+* @param stock_names Vector of stock names
+* @param dates_list Vector of vectors of date strings (one per stock)
+* @param y_values_list Vector of vectors of y values (one per stock)
+* @param before Number of days before disclosure date (for CSV header)
+* @param after Number of days after disclosure date (for CSV header)
+*/
+void savePlottedDataToCSV(
+    const std::string& filename,
+    const std::vector<std::string>& stock_names,
+    const std::vector<std::vector<std::string>>& dates_list,
+    const std::vector<std::vector<double>>& y_values_list,
+    int before,
+    int after
+) {
+// Open the CSV file for writing
+    std::ofstream csv_file(filename);
+    if (!csv_file.is_open()) {
+        std::cerr << "Failed to open CSV file: " << filename << std::endl;
+        return;
+    }
+
+// Write CSV header
+    csv_file << "Before,After,";
+    for (size_t i = 0; i < stock_names.size(); ++i) {
+        csv_file << stock_names[i] << "_Date," << stock_names[i] << "_Value,";
+    }
+    csv_file << "\n";
+
+// Write metadata row
+    csv_file << before << "," << after << ",";
+    for (size_t i = 0; i < stock_names.size(); ++i) {
+        csv_file << ",";
+    }
+    csv_file << "\n";
+
+// Determine the maximum number of data points
+    size_t max_points = 0;
+    for (size_t i = 0; i < dates_list.size(); ++i) {
+        if (dates_list[i].size() > max_points) {
+            max_points = dates_list[i].size();
+        }
+    }
+
+// Write data rows
+    for (size_t i = 0; i < max_points; ++i) {
+        csv_file << "," << ",";
+        for (size_t j = 0; j < stock_names.size(); ++j) {
+            if (i < dates_list[j].size() && i < y_values_list[j].size()) {
+                csv_file << dates_list[j][i] << "," << y_values_list[j][i] << ",";
+            } else {
+                csv_file << ",,";
+            }
+        }
+        csv_file << "\n";
+    }
+
+    csv_file.close();
+    std::cout << "Plotted data saved to: " << filename << std::endl;
+}
+
+

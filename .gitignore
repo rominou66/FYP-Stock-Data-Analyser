@@ -1,6 +1,7 @@
 build/
-*~
 output/
+*~
+Shortcut.sh
 
 # Prerequisites
 *.d

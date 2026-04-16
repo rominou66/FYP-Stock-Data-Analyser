@@ -1,25 +1,43 @@
 #include <vector>
-#include <string>
 
 #include "../include/plotter.hpp"
 #include "../include/parser.hpp"
 #include "../include/stock.hpp"
+#include "../include/analysis.hpp"
 
 int main() {
-    // Data: Date (as string) and Price
-    std::vector<std::string> dates = {
-        "2022-01-07", "2022-01-06", "2022-01-05", "2022-01-04", "2022-01-03",
-        "2021-12-31", "2021-12-30", "2021-12-29", "2021-12-28", "2021-12-27",
-        "2021-12-23", "2021-12-22", "2021-12-21", "2021-12-20", "2021-12-17",
-        "2021-12-16", "2021-12-15", "2021-12-14", "2021-12-13", "2021-12-10",
-        "2021-12-09", "2021-12-08", "2021-12-07", "2021-12-06"
-    };
-    std::vector<double> prices = {
-        314.04, 313.88, 316.38, 329.01, 334.75, 336.32, 339.32, 341.95, 341.25,
-        342.45, 334.69, 333.20, 327.29, 319.91, 323.80, 324.90, 334.65, 328.34,
-        339.40, 342.54, 333.10, 334.97, 334.92, 326.19
-    };
+    // 1. Parse all CSV files and get the stock data
+    std::vector<Stock> stocks = processAllCSVFiles();
 
-    plot(dates, prices);
+    // 2. Plot each stock's data
+    for(const auto& stock : stocks) {
+        singlePlot(stock, 30, 30);
+        singlePlot(stock, 0, 5);
+    }
+
+    // 3. Plot all stocks to single graph
+    multiPlot(stocks, 30, 30);
+    multiPlot(stocks, 0, 5);
+
+    // 4. Plot all stocks to single graph normalized
+    normalizedMultiPlot(stocks, 30, 30);
+    normalizedMultiPlot(stocks, 0, 5);
+
+    // 5. Analysed
+    int spy = findStockByName(stocks, "SPY");
+    for(auto& stock : stocks) {
+        estimateAlphaBeta(stock, stocks[spy]);
+    }
+    // 5.1 Abnormal Return
+    for(const auto& stock : stocks) {
+        abnormalReturnPlot(stock, stocks[spy], 30, 30);
+        abnormalReturnPlot(stock, stocks[spy], 0, 5);
+    }
+    // 5.2 Cumulative Abnormal Return
+    for(const auto& stock : stocks) {
+        cumulativeARPlot(stock, stocks[spy], 30, 30);
+        cumulativeARPlot(stock, stocks[spy], 0, 5);
+    }
+
     return 0;
 }

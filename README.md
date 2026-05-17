@@ -4,7 +4,7 @@
 
 matplotplusplus 1.2.2
 
-## Build 
+## Build
 
 - Cpp standard 23
 - GCC 15
@@ -14,7 +14,7 @@ matplotplusplus 1.2.2
 
 FYP Stock Data Analyser is a program that help with the automation of the parsing of collected stock data, in the goal of producing plots an CSVs following a Event Studies framework.
 
-### Usage 
+### Usage
 
-
+Drop the CSVs to analyses in the folder data_csv, all process graph and CSVs are in the folder output
 

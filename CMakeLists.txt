@@ -14,7 +14,7 @@ set(MATPLOT_INCLUDE_DIR "/home/linuxbrew/.linuxbrew/Cellar/matplotplusplus/1.2.2
 set(MATPLOT_LIBRARY_DIR "/home/linuxbrew/.linuxbrew/Cellar/matplotplusplus/1.2.2/lib")
 
 # Add executable
-add_executable(matplot_lib
+add_executable(fyp-stock-data
     src/main.cpp
     src/plotter.cpp
     src/parser.cpp
@@ -23,9 +23,9 @@ add_executable(matplot_lib
 )
 
 # Include directories and link libraries
-target_include_directories(matplot_lib PRIVATE ${MATPLOT_INCLUDE_DIR} include)
-target_link_directories(matplot_lib PRIVATE ${MATPLOT_LIBRARY_DIR})
-target_link_libraries(matplot_lib
+target_include_directories(fyp-stock-data PRIVATE ${MATPLOT_INCLUDE_DIR} include)
+target_link_directories(fyp-stock-data PRIVATE ${MATPLOT_LIBRARY_DIR})
+target_link_libraries(fyp-stock-data
     PRIVATE
     matplot
     m  # Link the math library
@@ -33,7 +33,7 @@ target_link_libraries(matplot_lib
 )
 
 # Set rpath to find the library at runtime
-set_target_properties(matplot_lib PROPERTIES
+set_target_properties(fyp-stock-data PROPERTIES
     INSTALL_RPATH "${MATPLOT_LIBRARY_DIR}"
     BUILD_RPATH "${MATPLOT_LIBRARY_DIR}"
 )

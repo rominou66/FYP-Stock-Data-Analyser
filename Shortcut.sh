@@ -33,7 +33,7 @@ while true; do
             ;;
         "Run")
             cd build
-            ./matplot_lib
+            ./fyp-stock-data
             ;;
         *)
             zenity --error --text="Invalid option, please try again."

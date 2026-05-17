@@ -15,6 +15,8 @@ void singlePlot(Stock stock, int before, int after);
 void multiPlot(const std::vector<Stock>& stocks, int before, int after);
 void normalizedMultiPlot(const std::vector<Stock>& stocks, int before, int after);
 void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after);
+void abnormalReturnPlot(const std::vector<Stock>& stocks, Stock marketReturns, int before, int after);
 void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after);
+void cumulativeARPlot(const std::vector<Stock>& stocks, Stock marketReturns, int before, int after);
 
 #endif //PLOTTER_HPP

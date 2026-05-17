@@ -414,6 +414,13 @@ void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after)
     const auto& prices = stock.histD[0].prices;
     const auto& marketPrices = marketReturns.histD[0].prices;
 
+    // Ensure both have same size - use minimum to avoid out of bounds
+    size_t min_size = std::min(prices.size(), marketPrices.size());
+    if (min_size == 0) {
+        std::cerr << "No matching data between stock and market" << std::endl;
+        return;
+    }
+
     // Calculate actual returns (R_it)
     std::vector<double> actualReturns = calculateReturns(prices);
 
@@ -421,14 +428,14 @@ void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after)
     std::vector<double> marketReturnsVec = calculateReturns(marketPrices);
 
     // Calculate expected returns (alpha_i + beta_i * R_mt)
-    std::vector<double> expectedReturns(prices.size(), 0.0);
-    for (size_t i = 1; i < marketReturnsVec.size(); ++i) {
+    std::vector<double> expectedReturns(min_size, 0.0);
+    for (size_t i = 1; i < min_size; ++i) {
         expectedReturns[i] = stock.alpha + stock.beta * marketReturnsVec[i];
     }
 
     // Calculate abnormal returns (AR_it)
-    std::vector<double> abnormalReturns(prices.size(), 0.0);
-    for (size_t i = 1; i < prices.size(); ++i) {
+    std::vector<double> abnormalReturns(min_size, 0.0);
+    for (size_t i = 1; i < min_size; ++i) {
         abnormalReturns[i] = actualReturns[i] - expectedReturns[i];
     }
 
@@ -447,9 +454,14 @@ void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after)
         }
     }
 
+    // Cap disclosure_index to valid range for abnormalReturns
+    if (disclosure_index >= min_size) {
+        disclosure_index = min_size - 1;
+    }
+
     // Calculate start and end indices
     size_t start_index = (disclosure_index > before) ? disclosure_index - before : 0;
-    size_t end_index = (disclosure_index + after < dates.size()) ? disclosure_index + after : dates.size() - 1;
+    size_t end_index = (disclosure_index + after < min_size) ? disclosure_index + after : min_size - 1;
 
     // Slice data for plotting
     std::vector<double> x_values, abnormalReturns_sliced;
@@ -466,7 +478,7 @@ void abnormalReturnPlot(Stock stock, Stock marketReturns, int before, int after)
 
     // Add disclosure date marker
     if( before > 0) {
-        if (disclosure_index < dates.size()) {
+        if (disclosure_index < min_size) {
             double x_disclosure = static_cast<double>(disclosure_index - start_index);
             double y_disclosure = abnormalReturns_sliced[disclosure_index - start_index];
             auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
@@ -530,6 +542,13 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
     const auto& prices = stock.histD[0].prices;
     const auto& marketPrices = marketReturns.histD[0].prices;
 
+    // Ensure both have same size - use minimum to avoid out of bounds
+    size_t min_size = std::min(prices.size(), marketPrices.size());
+    if (min_size == 0) {
+        std::cerr << "No matching data between stock and market" << std::endl;
+        return;
+    }
+
     // Calculate actual returns (R_it)
     std::vector<double> actualReturns = calculateReturns(prices);
 
@@ -537,14 +556,14 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
     std::vector<double> marketReturnsVec = calculateReturns(marketPrices);
 
     // Calculate expected returns (alpha_i + beta_i * R_mt)
-    std::vector<double> expectedReturns(prices.size(), 0.0);
-    for (size_t i = 1; i < marketReturnsVec.size(); ++i) {
+    std::vector<double> expectedReturns(min_size, 0.0);
+    for (size_t i = 1; i < min_size; ++i) {
         expectedReturns[i] = stock.alpha + stock.beta * marketReturnsVec[i];
     }
 
     // Calculate abnormal returns (AR_it)
-    std::vector<double> abnormalReturns(prices.size(), 0.0);
-    for (size_t i = 1; i < prices.size(); ++i) {
+    std::vector<double> abnormalReturns(min_size, 0.0);
+    for (size_t i = 1; i < min_size; ++i) {
         abnormalReturns[i] = actualReturns[i] - expectedReturns[i];
     }
 
@@ -566,9 +585,14 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
         }
     }
 
+    // Cap disclosure_index to valid range for car
+    if (disclosure_index >= min_size) {
+        disclosure_index = min_size - 1;
+    }
+
 // Calculate start and end indices
     size_t start_index = (disclosure_index > before) ? disclosure_index - before : 0;
-    size_t end_index = (disclosure_index + after < dates.size()) ? disclosure_index + after : dates.size() - 1;
+    size_t end_index = (disclosure_index + after < min_size) ? disclosure_index + after : min_size - 1;
 
 // Slice data for plotting
     std::vector<double> x_values, car_sliced;
@@ -585,13 +609,13 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
 
 // Add disclosure date marker
     if(before > 0) {
-            if (disclosure_index < dates.size()) {
-                double x_disclosure = static_cast<double>(disclosure_index - start_index);
-                double y_disclosure = car_sliced[disclosure_index - start_index];
-                auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
-                t->color("red").font_size(14);
-                a->color("red");
-            }
+        if (disclosure_index < min_size) {
+            double x_disclosure = static_cast<double>(disclosure_index - start_index);
+            double y_disclosure = car_sliced[disclosure_index - start_index];
+            auto [t, a] = matplot::textarrow(x_disclosure + 2.5, y_disclosure + 0.01, x_disclosure, y_disclosure, "Disclosure Date");
+            t->color("red").font_size(14);
+            a->color("red");
+        }
     }
 
 // Set plot title and labels
@@ -627,5 +651,169 @@ void cumulativeARPlot(Stock stock, Stock marketReturns, int before, int after) {
                            "-after" + std::to_string(after);
     matplot::save(filename + ".svg");
     savePlottedDataToCSV(filename + ".csv", dates_sliced, car_sliced, stock.tickerN, before, after);
+}
+
+/**
+* @brief Plot abnormal returns for all stocks and save to a single CSV
+*
+* @param stocks Vector of Stock objects
+* @param marketReturns Market returns (SPY)
+* @param before Number of days before disclosure date to plot
+* @param after Number of days after disclosure date to plot
+*/
+void abnormalReturnPlot(const std::vector<Stock>& stocks, Stock marketReturns, int before, int after) {
+    std::vector<std::string> stock_names;
+    std::vector<std::vector<std::string>> dates_list;
+    std::vector<std::vector<double>> y_values_list;
+
+    for (const auto& stock : stocks) {
+        if (stock.histD.empty() || stock.histD[0].dates.empty() || stock.histD[0].prices.empty()) {
+            std::cerr << "No data available for stock: " << stock.tickerN << std::endl;
+            continue;
+        }
+
+        const auto& dates = stock.histD[0].dates;
+        const auto& prices = stock.histD[0].prices;
+        const auto& marketPrices = marketReturns.histD[0].prices;
+
+        size_t min_size = std::min(prices.size(), marketPrices.size());
+        if (min_size == 0) {
+            std::cerr << "No matching data between stock and market for: " << stock.tickerN << std::endl;
+            continue;
+        }
+
+        std::vector<double> actualReturns = calculateReturns(prices);
+        std::vector<double> marketReturnsVec = calculateReturns(marketPrices);
+
+        std::vector<double> expectedReturns(min_size, 0.0);
+        for (size_t i = 1; i < min_size; ++i) {
+            expectedReturns[i] = stock.alpha + stock.beta * marketReturnsVec[i];
+        }
+
+        std::vector<double> abnormalReturns(min_size, 0.0);
+        for (size_t i = 1; i < min_size; ++i) {
+            abnormalReturns[i] = actualReturns[i] - expectedReturns[i];
+        }
+
+        size_t disclosure_index = dates.size();
+        if (!stock.disclosureD.empty() && stock.disclosureD != "Unknown") {
+            std::string target_date = stock.disclosureD;
+            if (target_date.length() == 8) {
+                target_date = target_date.substr(0, 2) + "/" + target_date.substr(2, 2) + "/" + target_date.substr(4, 4);
+            }
+            for (size_t i = 0; i < dates.size(); ++i) {
+                if (dates[i] == target_date) {
+                    disclosure_index = i;
+                    break;
+                }
+            }
+        }
+
+        if (disclosure_index >= min_size) {
+            disclosure_index = min_size - 1;
+        }
+
+        size_t start_index = (disclosure_index > before) ? disclosure_index - before : 0;
+        size_t end_index = (disclosure_index + after < min_size) ? disclosure_index + after : min_size - 1;
+
+        std::vector<double> abnormalReturns_sliced;
+        std::vector<std::string> dates_sliced;
+        for (size_t i = start_index; i <= end_index; ++i) {
+            abnormalReturns_sliced.push_back(abnormalReturns[i]);
+            dates_sliced.push_back(dates[i]);
+        }
+
+        stock_names.push_back(stock.tickerN);
+        dates_list.push_back(dates_sliced);
+        y_values_list.push_back(abnormalReturns_sliced);
+    }
+
+    if (!stock_names.empty()) {
+        std::string filename = "../output/AbnormalReturn-ALL-before" + std::to_string(before) + "-after" + std::to_string(after);
+        savePlottedDataToCSV(filename + ".csv", stock_names, dates_list, y_values_list, before, after);
+    }
+}
+
+/**
+* @brief Plot cumulative abnormal returns for all stocks and save to a single CSV
+*
+* @param stocks Vector of Stock objects
+* @param marketReturns Market returns (SPY)
+* @param before Number of days before disclosure date to plot
+* @param after Number of days after disclosure date to plot
+*/
+void cumulativeARPlot(const std::vector<Stock>& stocks, Stock marketReturns, int before, int after) {
+    std::vector<std::string> stock_names;
+    std::vector<std::vector<std::string>> dates_list;
+    std::vector<std::vector<double>> y_values_list;
+
+    for (const auto& stock : stocks) {
+        if (stock.histD.empty() || stock.histD[0].dates.empty() || stock.histD[0].prices.empty()) {
+            std::cerr << "No data available for stock: " << stock.tickerN << std::endl;
+            continue;
+        }
+
+        const auto& dates = stock.histD[0].dates;
+        const auto& prices = stock.histD[0].prices;
+        const auto& marketPrices = marketReturns.histD[0].prices;
+
+        size_t min_size = std::min(prices.size(), marketPrices.size());
+        if (min_size == 0) {
+            std::cerr << "No matching data between stock and market for: " << stock.tickerN << std::endl;
+            continue;
+        }
+
+        std::vector<double> actualReturns = calculateReturns(prices);
+        std::vector<double> marketReturnsVec = calculateReturns(marketPrices);
+
+        std::vector<double> expectedReturns(min_size, 0.0);
+        for (size_t i = 1; i < min_size; ++i) {
+            expectedReturns[i] = stock.alpha + stock.beta * marketReturnsVec[i];
+        }
+
+        std::vector<double> abnormalReturns(min_size, 0.0);
+        for (size_t i = 1; i < min_size; ++i) {
+            abnormalReturns[i] = actualReturns[i] - expectedReturns[i];
+        }
+
+        std::vector<double> car = calculateCAR(abnormalReturns);
+
+        size_t disclosure_index = dates.size();
+        if (!stock.disclosureD.empty() && stock.disclosureD != "Unknown") {
+            std::string target_date = stock.disclosureD;
+            if (target_date.length() == 8) {
+                target_date = target_date.substr(0, 2) + "/" + target_date.substr(2, 2) + "/" + target_date.substr(4, 4);
+            }
+            for (size_t i = 0; i < dates.size(); ++i) {
+                if (dates[i] == target_date) {
+                    disclosure_index = i;
+                    break;
+                }
+            }
+        }
+
+        if (disclosure_index >= min_size) {
+            disclosure_index = min_size - 1;
+        }
+
+        size_t start_index = (disclosure_index > before) ? disclosure_index - before : 0;
+        size_t end_index = (disclosure_index + after < min_size) ? disclosure_index + after : min_size - 1;
+
+        std::vector<double> car_sliced;
+        std::vector<std::string> dates_sliced;
+        for (size_t i = start_index; i <= end_index; ++i) {
+            car_sliced.push_back(car[i]);
+            dates_sliced.push_back(dates[i]);
+        }
+
+        stock_names.push_back(stock.tickerN);
+        dates_list.push_back(dates_sliced);
+        y_values_list.push_back(car_sliced);
+    }
+
+    if (!stock_names.empty()) {
+        std::string filename = "../output/CAR-ALL-before" + std::to_string(before) + "-after" + std::to_string(after);
+        savePlottedDataToCSV(filename + ".csv", stock_names, dates_list, y_values_list, before, after);
+    }
 }
 

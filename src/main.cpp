@@ -25,6 +25,10 @@ int main() {
 
     // 5. Analysed
     int spy = findStockByName(stocks, "SPY");
+    if (spy < 0) {
+        std::cerr << "SPY stock not found in the dataset!" << std::endl;
+        return 1;
+    }
     for(auto& stock : stocks) {
         estimateAlphaBeta(stock, stocks[spy]);
     }
@@ -33,11 +37,18 @@ int main() {
         abnormalReturnPlot(stock, stocks[spy], 30, 30);
         abnormalReturnPlot(stock, stocks[spy], 0, 5);
     }
+    // Save all abnormal returns to single CSV
+    abnormalReturnPlot(stocks, stocks[spy], 30, 30);
+    abnormalReturnPlot(stocks, stocks[spy], 0, 5);
+
     // 5.2 Cumulative Abnormal Return
     for(const auto& stock : stocks) {
         cumulativeARPlot(stock, stocks[spy], 30, 30);
         cumulativeARPlot(stock, stocks[spy], 0, 5);
     }
+    // Save all CAR to single CSV
+    cumulativeARPlot(stocks, stocks[spy], 30, 30);
+    cumulativeARPlot(stocks, stocks[spy], 0, 5);
 
     return 0;
 }
